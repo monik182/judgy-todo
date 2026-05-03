@@ -10,7 +10,7 @@ interface JudgeRequest {
   todos: { text: string; completed: boolean }[];
 }
 
-const ALLOWED_ORIGINS = ['http://localhost:4200'];
+const ALLOWED_ORIGINS = ['http://localhost:4200', 'https://judgy-todo.pages.dev'];
 
 const rateLimit = new Map<string, { count: number; resetAt: number }>();
 const RATE_LIMIT = 3;
