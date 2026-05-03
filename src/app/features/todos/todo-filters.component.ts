@@ -1,20 +1,26 @@
 import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { TodoFilter } from '../../shared/models/todo.model';
 
 @Component({
   selector: 'app-todo-filters',
+  imports: [MatButtonToggleModule],
   template: `
-    <div class="todo-filters">
+    <mat-button-toggle-group
+      [value]="currentFilter()"
+      (change)="filterChanged.emit($event.value)"
+    >
       @for (option of filterOptions; track option.value) {
-        <button
-          (click)="filterChanged.emit(option.value)"
-          [class.active]="currentFilter() === option.value"
-          class="todo-filters__btn"
-        >
+        <mat-button-toggle [value]="option.value">
           {{ option.label }} ({{ option.value === 'all' ? total() : option.value === 'active' ? activeCount() : completedCount() }})
-        </button>
+        </mat-button-toggle>
       }
-    </div>
+    </mat-button-toggle-group>
+  `,
+  styles: `
+    mat-button-toggle-group {
+      margin: 16px 0;
+    }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
