@@ -7,6 +7,12 @@ import { TodoFilter } from '../../shared/models/todo.model';
   imports: [MatButtonModule],
   template: `
     <div class="todo-filters">
+      @if (completedCount() > 0) {
+        <button class="todo-filters__clear" (click)="clearCompleted.emit()">
+          Clear completed
+        </button>
+      }
+      <div class="todo-filters__spacer"></div>
       @if (currentFilter() === 'active' || currentFilter() === 'all') {
         <button class="todo-filters__btn" (click)="filterChanged.emit('completed')">
           Show completed to-dos
@@ -22,8 +28,25 @@ import { TodoFilter } from '../../shared/models/todo.model';
   styles: `
     .todo-filters {
       display: flex;
-      justify-content: flex-end;
+      align-items: center;
       padding: 8px 0;
+    }
+    .todo-filters__spacer {
+      flex: 1;
+    }
+    .todo-filters__clear {
+      background: none;
+      border: none;
+      color: #9C27B0;
+      font-size: 12px;
+      cursor: pointer;
+      padding: 4px 0;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+    .todo-filters__clear:hover {
+      opacity: 1;
+      text-decoration: underline;
     }
     .todo-filters__btn {
       background: linear-gradient(135deg, #9C27B0, #7B1FA2);
@@ -48,4 +71,5 @@ export class TodoFiltersComponent {
   activeCount = input.required<number>();
   completedCount = input.required<number>();
   filterChanged = output<TodoFilter>();
+  clearCompleted = output<void>();
 }

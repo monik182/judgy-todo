@@ -8,7 +8,7 @@ const MESSAGE_TYPES: Record<string, JudgeMessage['type']> = {
   ON_ADD_TASK: 'roast',
   ON_COMPLETE_TASK: 'praise',
   ON_DELETE_TASK: 'roast',
-  ON_CLEAR_COMPLETED: 'observation',
+  ON_CLEAR_COMPLETED: 'roast',
   ON_ASK: 'response',
 };
 

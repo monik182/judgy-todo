@@ -21,7 +21,7 @@ import { JudgeMessage } from '../../shared/models/todo.model';
       @fadeIn
     >
       @if (message().type !== 'observation') {
-        <div class="judge-bubble__avatar judge-bubble__avatar--ai">AIC</div>
+        <div class="judge-bubble__avatar judge-bubble__avatar--ai">J</div>
       }
       <div class="judge-bubble__content">
         <p class="judge-bubble__text">{{ message().text }}</p>

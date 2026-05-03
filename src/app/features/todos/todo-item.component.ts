@@ -10,6 +10,12 @@ import { Todo } from '../../shared/models/todo.model';
     <div class="todo-item" [class.todo-item--completed]="todo().completed" (click)="toggled.emit(todo().id)">
       <span class="todo-item__text">{{ todo().text }}</span>
       <button
+        class="todo-item__delete"
+        (click)="$event.stopPropagation(); deleted.emit(todo().id)"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+      <button
         class="todo-item__check"
         [class.todo-item__check--done]="todo().completed"
         (click)="$event.stopPropagation(); toggled.emit(todo().id)"
@@ -67,6 +73,33 @@ import { Todo } from '../../shared/models/todo.model';
       font-size: 18px;
       width: 18px;
       height: 18px;
+    }
+    .todo-item__delete {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: none;
+      background: transparent;
+      color: #999;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      opacity: 0;
+      transition: opacity 0.2s, color 0.2s;
+      flex-shrink: 0;
+    }
+    .todo-item:hover .todo-item__delete {
+      opacity: 1;
+    }
+    .todo-item__delete:hover {
+      color: #d32f2f;
+    }
+    .todo-item__delete mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

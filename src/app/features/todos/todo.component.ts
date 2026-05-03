@@ -37,6 +37,7 @@ import { Priority, TodoFilter } from '../../shared/models/todo.model';
           [activeCount]="todoService.stats().active"
           [completedCount]="todoService.stats().completed"
           (filterChanged)="onFilterChange($event)"
+          (clearCompleted)="onClearCompleted()"
         />
       </div>
 
