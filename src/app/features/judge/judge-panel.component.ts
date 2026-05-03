@@ -1,5 +1,4 @@
 import { Component, ChangeDetectionStrategy, inject, viewChild, effect, ElementRef } from '@angular/core';
-import { MatCardModule } from '@angular/material/card';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { JudgeService } from '../../core/services/judge.service';
 import { JudgeMessageComponent } from './judge-message.component';
@@ -7,50 +6,54 @@ import { JudgeInputComponent } from './judge-input.component';
 
 @Component({
   selector: 'app-judge-panel',
-  imports: [JudgeMessageComponent, JudgeInputComponent, MatCardModule, MatProgressBarModule],
+  imports: [JudgeMessageComponent, JudgeInputComponent, MatProgressBarModule],
   template: `
-    <mat-card class="judge-panel">
-      <mat-card-header>
-        <mat-card-title>🤖 JUDGE PANEL</mat-card-title>
-      </mat-card-header>
+    <div class="judge-panel">
+      <div class="judge-panel__header">
+        <span class="judge-panel__breadcrumb">&lt;/&gt; Judgy Todos</span>
+      </div>
 
-      <mat-card-content>
-        <div class="judge-panel__messages" #scrollContainer>
-          @for (message of judgeService.messages(); track message.id) {
-            <app-judge-message [message]="message" />
-          }
+      <div class="judge-panel__messages" #scrollContainer>
+        @for (message of judgeService.messages(); track message.id) {
+          <app-judge-message [message]="message" />
+        }
 
-          @if (judgeService.isThinking()) {
-            <div class="judge-panel__thinking">
-              <mat-progress-bar mode="indeterminate" />
-              <span>The judge is thinking...</span>
-            </div>
-          }
-        </div>
-      </mat-card-content>
+        @if (judgeService.isThinking()) {
+          <div class="judge-panel__thinking">
+            <mat-progress-bar mode="indeterminate" />
+            <span>The judge is thinking...</span>
+          </div>
+        }
+      </div>
 
-      <mat-card-actions>
+      <div class="judge-panel__input">
         <app-judge-input (questionAsked)="onAsk($event)" />
-      </mat-card-actions>
-    </mat-card>
+      </div>
+    </div>
   `,
   styles: `
     .judge-panel {
       height: 100%;
       display: flex;
       flex-direction: column;
-    }
-    mat-card-content {
-      flex: 1;
+      background: white;
+      border-radius: 20px;
       overflow: hidden;
-      display: flex;
-      flex-direction: column;
+    }
+    .judge-panel__header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #eee;
+    }
+    .judge-panel__breadcrumb {
+      font-size: 14px;
+      font-weight: 500;
+      color: #666;
     }
     .judge-panel__messages {
       flex: 1;
       overflow-y: auto;
       scroll-behavior: smooth;
-      padding: 8px 0;
+      padding: 16px 20px;
     }
     .judge-panel__thinking {
       padding: 12px;
@@ -63,8 +66,9 @@ import { JudgeInputComponent } from './judge-input.component';
       margin-top: 8px;
       font-size: 13px;
     }
-    mat-card-actions {
-      padding: 8px 16px !important;
+    .judge-panel__input {
+      padding: 12px 20px;
+      border-top: 1px solid #eee;
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

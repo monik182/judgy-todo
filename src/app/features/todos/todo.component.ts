@@ -1,8 +1,4 @@
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
-import { MatCardModule } from '@angular/material/card';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { TodoService } from './todo.service';
 import { JudgeService } from '../../core/services/judge.service';
 import { TodoInputComponent } from './todo-input.component';
@@ -15,18 +11,13 @@ import { Priority, TodoFilter } from '../../shared/models/todo.model';
   selector: 'app-todo',
   imports: [
     TodoInputComponent, TodoItemComponent, TodoFiltersComponent, TodoStatsComponent,
-    MatCardModule, MatDividerModule, MatButtonModule, MatIconModule,
   ],
   template: `
-    <mat-card class="todo-panel">
-      <mat-card-header>
-        <mat-card-title>📝 TODO PANEL</mat-card-title>
-      </mat-card-header>
+    <div class="todo-panel">
+      <app-todo-stats [stats]="todoService.stats()" />
 
-      <mat-card-content>
-        <app-todo-input (todoAdded)="onAdd($event)" />
-
-        <mat-divider />
+      <div class="todo-panel__card">
+        <h2 class="todo-panel__title">Your Tasks</h2>
 
         <div class="todo-panel__list">
           @for (todo of todoService.filteredTodos(); track todo.id) {
@@ -40,8 +31,6 @@ import { Priority, TodoFilter } from '../../shared/models/todo.model';
           }
         </div>
 
-        <mat-divider />
-
         <app-todo-filters
           [currentFilter]="todoService.filter()"
           [total]="todoService.stats().total"
@@ -49,27 +38,33 @@ import { Priority, TodoFilter } from '../../shared/models/todo.model';
           [completedCount]="todoService.stats().completed"
           (filterChanged)="onFilterChange($event)"
         />
+      </div>
 
-        <app-todo-stats [stats]="todoService.stats()" />
-      </mat-card-content>
-
-      @if (todoService.stats().completed > 0) {
-        <mat-card-actions>
-          <button mat-button color="warn" (click)="onClearCompleted()">
-            <mat-icon>delete_sweep</mat-icon>
-            Clear completed
-          </button>
-        </mat-card-actions>
-      }
-    </mat-card>
+      <app-todo-input (todoAdded)="onAdd($event)" />
+    </div>
   `,
   styles: `
     .todo-panel {
       height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .todo-panel__card {
+      background: linear-gradient(145deg, #e8d5f5, #d4b8e8);
+      border-radius: 20px;
+      padding: 20px;
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+    }
+    .todo-panel__title {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 0 0 16px 0;
+      color: #333;
     }
     .todo-panel__list {
-      padding: 8px 0;
-      min-height: 100px;
+      min-height: 80px;
     }
     .todo-panel__empty {
       text-align: center;

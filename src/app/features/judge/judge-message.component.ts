@@ -1,11 +1,10 @@
 import { Component, ChangeDetectionStrategy, input } from '@angular/core';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { JudgeMessage } from '../../shared/models/todo.model';
-import { TimeAgoPipe } from '../../shared/pipes/time-ago.pipe';
 
 @Component({
   selector: 'app-judge-message',
-  imports: [TimeAgoPipe],
+  imports: [],
   animations: [
     trigger('fadeIn', [
       transition(':enter', [
@@ -15,62 +14,77 @@ import { TimeAgoPipe } from '../../shared/pipes/time-ago.pipe';
     ]),
   ],
   template: `
-    <div class="judge-bubble" [class]="'judge-bubble--' + message().type" @fadeIn>
-      <span class="judge-bubble__icon">
-        @switch (message().type) {
-          @case ('roast') { 🔥 }
-          @case ('praise') { ⭐ }
-          @case ('observation') { 👀 }
-          @case ('response') { 💬 }
-        }
-      </span>
+    <div
+      class="judge-bubble"
+      [class.judge-bubble--user]="message().type === 'observation'"
+      [class.judge-bubble--ai]="message().type !== 'observation'"
+      @fadeIn
+    >
+      @if (message().type !== 'observation') {
+        <div class="judge-bubble__avatar judge-bubble__avatar--ai">AIC</div>
+      }
       <div class="judge-bubble__content">
         <p class="judge-bubble__text">{{ message().text }}</p>
-        <span class="judge-bubble__time">{{ message().timestamp | timeAgo }}</span>
       </div>
+      @if (message().type === 'observation') {
+        <div class="judge-bubble__avatar judge-bubble__avatar--user">MC</div>
+      }
     </div>
   `,
   styles: `
     .judge-bubble {
       display: flex;
-      gap: 8px;
-      padding: 12px;
-      border-radius: 12px;
-      margin-bottom: 8px;
+      gap: 10px;
+      margin-bottom: 12px;
+      align-items: flex-start;
     }
-    .judge-bubble--roast {
-      background-color: var(--mat-sys-error-container);
-      color: var(--mat-sys-on-error-container);
+    .judge-bubble--ai {
+      justify-content: flex-start;
+      padding-right: 48px;
     }
-    .judge-bubble--praise {
-      background-color: var(--mat-sys-primary-container);
-      color: var(--mat-sys-on-primary-container);
+    .judge-bubble--user {
+      justify-content: flex-end;
+      padding-left: 48px;
     }
-    .judge-bubble--observation {
-      background-color: var(--mat-sys-surface-container-high);
-      color: var(--mat-sys-on-surface);
-    }
-    .judge-bubble--response {
-      background-color: var(--mat-sys-tertiary-container);
-      color: var(--mat-sys-on-tertiary-container);
-    }
-    .judge-bubble__icon {
-      font-size: 20px;
+    .judge-bubble__avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
       flex-shrink: 0;
+    }
+    .judge-bubble__avatar--ai {
+      background: #7B1FA2;
+      color: white;
+    }
+    .judge-bubble__avatar--user {
+      background: #FFC107;
+      color: #333;
     }
     .judge-bubble__content {
       flex: 1;
       min-width: 0;
     }
+    .judge-bubble--ai .judge-bubble__content {
+      background: #f0e6f6;
+      color: #333;
+      border-radius: 4px 16px 16px 16px;
+      padding: 12px 16px;
+    }
+    .judge-bubble--user .judge-bubble__content {
+      background: #e0d0ee;
+      color: #333;
+      border-radius: 16px 4px 16px 16px;
+      padding: 12px 16px;
+    }
     .judge-bubble__text {
       margin: 0;
-      line-height: 1.4;
-    }
-    .judge-bubble__time {
-      font-size: 11px;
-      opacity: 0.6;
-      margin-top: 4px;
-      display: block;
+      line-height: 1.5;
+      font-size: 14px;
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

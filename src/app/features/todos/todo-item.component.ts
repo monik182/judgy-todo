@@ -1,33 +1,22 @@
 import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { Todo } from '../../shared/models/todo.model';
-import { TimeAgoPipe } from '../../shared/pipes/time-ago.pipe';
 
 @Component({
   selector: 'app-todo-item',
-  imports: [TimeAgoPipe, MatCheckboxModule, MatChipsModule, MatIconModule, MatButtonModule],
+  imports: [MatIconModule, MatButtonModule],
   template: `
-    <div class="todo-item" [class.completed]="todo().completed">
-      <mat-checkbox
-        [checked]="todo().completed"
-        (change)="toggled.emit(todo().id)"
-      />
+    <div class="todo-item" [class.todo-item--completed]="todo().completed" (click)="toggled.emit(todo().id)">
       <span class="todo-item__text">{{ todo().text }}</span>
-      <mat-chip-set>
-        <mat-chip [highlighted]="true" class="badge--{{ todo().priority }}">
-          @switch (todo().priority) {
-            @case ('high') { 🔴 high }
-            @case ('medium') { 🟡 medium }
-            @case ('low') { 🟢 low }
-          }
-        </mat-chip>
-      </mat-chip-set>
-      <span class="todo-item__time">{{ todo().createdAt | timeAgo }}</span>
-      <button mat-icon-button color="warn" (click)="deleted.emit(todo().id)">
-        <mat-icon>delete</mat-icon>
+      <button
+        class="todo-item__check"
+        [class.todo-item__check--done]="todo().completed"
+        (click)="$event.stopPropagation(); toggled.emit(todo().id)"
+      >
+        @if (todo().completed) {
+          <mat-icon>check</mat-icon>
+        }
       </button>
     </div>
   `,
@@ -36,18 +25,48 @@ import { TimeAgoPipe } from '../../shared/pipes/time-ago.pipe';
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 8px 0;
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 12px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
     }
-    .todo-item.completed .todo-item__text {
+    .todo-item:hover {
+      background: rgba(255, 255, 255, 0.85);
+    }
+    .todo-item--completed .todo-item__text {
       text-decoration: line-through;
       opacity: 0.5;
     }
     .todo-item__text {
       flex: 1;
+      font-size: 14px;
+      line-height: 1.4;
     }
-    .todo-item__time {
-      font-size: 12px;
-      opacity: 0.6;
+    .todo-item__check {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2px solid #7B1FA2;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.2s;
+      padding: 0;
+    }
+    .todo-item__check--done {
+      background: #7B1FA2;
+      border-color: #7B1FA2;
+      color: white;
+    }
+    .todo-item__check mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
