@@ -13,7 +13,7 @@ interface JudgeRequest {
 const ALLOWED_ORIGINS = ['http://localhost:4200'];
 
 const rateLimit = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT = 20;
+const RATE_LIMIT = 3;
 const RATE_WINDOW_MS = 60_000;
 
 function getCorsHeaders(origin: string | null): Record<string, string> {
