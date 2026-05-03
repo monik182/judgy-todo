@@ -1,6 +1,8 @@
-import { Injectable, signal } from '@angular/core';
-import { Subscription, timer } from 'rxjs';
+import { Injectable, inject, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, Subscription, catchError, map, of, timeout } from 'rxjs';
 import { JudgeMessage } from '../../shared/models/todo.model';
+import { TodoService } from '../../features/todos/todo.service';
 
 const MESSAGE_TYPES: Record<string, JudgeMessage['type']> = {
   ON_ADD_TASK: 'roast',
@@ -44,6 +46,11 @@ const ROASTS: Record<string, string[]> = {
 
 @Injectable({ providedIn: 'root' })
 export class JudgeService {
+  private http = inject(HttpClient);
+  private todoService = inject(TodoService);
+
+  private readonly apiUrl = 'https://judgy-todo-api.monik182.workers.dev/api/judge';
+
   private _messages = signal<JudgeMessage[]>([
     {
       id: crypto.randomUUID(),
@@ -62,10 +69,7 @@ export class JudgeService {
     this._cancelPending();
     this._isThinking.set(true);
 
-    const delay = 500 + Math.random() * 1000;
-    this._pendingSub = timer(delay).subscribe(() => {
-      const template = this._pickRoast(action);
-      const text = context ? this._interpolate(template, context) : template;
+    this._pendingSub = this._callJudgeApi(action, undefined, context).subscribe((text) => {
       this._pushMessage(text, MESSAGE_TYPES[action] ?? 'roast');
       this._isThinking.set(false);
     });
@@ -76,12 +80,38 @@ export class JudgeService {
     this._pushMessage(question, 'observation');
     this._isThinking.set(true);
 
-    const delay = 1000 + Math.random() * 1000;
-    this._pendingSub = timer(delay).subscribe(() => {
-      const template = this._pickRoast('ON_ASK');
-      this._pushMessage(template, 'response');
+    this._pendingSub = this._callJudgeApi('ON_ASK', question).subscribe((text) => {
+      this._pushMessage(text, 'response');
       this._isThinking.set(false);
     });
+  }
+
+  private _callJudgeApi(
+    action: string,
+    question?: string,
+    context?: Record<string, string>,
+  ): Observable<string> {
+    const todos = this.todoService.todos().map((t) => ({
+      text: t.text,
+      completed: t.completed,
+    }));
+
+    return this.http
+      .post<{ response: string }>(this.apiUrl, {
+        action,
+        question,
+        context,
+        todos,
+      })
+      .pipe(
+        timeout(8000),
+        map((res) => res.response),
+        catchError(() => {
+          const template = this._pickRoast(action);
+          const text = context ? this._interpolate(template, context) : template;
+          return of(text);
+        }),
+      );
   }
 
   private _pushMessage(text: string, type: JudgeMessage['type']): void {

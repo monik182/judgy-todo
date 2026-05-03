@@ -10,7 +10,7 @@ import { JudgeInputComponent } from './judge-input.component';
   template: `
     <div class="judge-panel">
       <div class="judge-panel__header">
-        <span class="judge-panel__breadcrumb">&lt;/&gt; Judgy Todos</span>
+        <span class="judge-panel__breadcrumb">Judgy Todos</span>
       </div>
 
       <div class="judge-panel__messages" #scrollContainer>
