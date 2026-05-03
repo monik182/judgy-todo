@@ -1,6 +1,7 @@
 interface Env {
   ANTHROPIC_API_KEY: string;
   AUTH_TOKEN: string;
+  TURNSTILE_SECRET_KEY: string;
 }
 
 interface JudgeRequest {
@@ -8,6 +9,7 @@ interface JudgeRequest {
   action: string;
   context?: Record<string, string>;
   todos: { text: string; completed: boolean }[];
+  turnstileToken?: string;
 }
 
 const ALLOWED_ORIGINS = ['http://localhost:4200', 'https://judgy-todo.pages.dev'];
@@ -15,6 +17,10 @@ const ALLOWED_ORIGINS = ['http://localhost:4200', 'https://judgy-todo.pages.dev'
 const rateLimit = new Map<string, { count: number; resetAt: number }>();
 const RATE_LIMIT = 3;
 const RATE_WINDOW_MS = 60_000;
+
+// Once Turnstile is verified, allow requests from that IP for this window
+const verifiedIps = new Map<string, number>();
+const VERIFIED_WINDOW_MS = 300_000; // 5 minutes
 
 function getCorsHeaders(origin: string | null): Record<string, string> {
   if (origin && ALLOWED_ORIGINS.includes(origin)) {
@@ -125,6 +131,43 @@ export default {
           { error: 'Invalid request' },
           { status: 400, headers: corsHeaders }
         );
+      }
+
+      // Verify Turnstile token (skip if recently verified)
+      const verifiedAt = verifiedIps.get(ip);
+      const isVerified = verifiedAt && Date.now() < verifiedAt;
+
+      if (!isVerified) {
+        if (!body.turnstileToken) {
+          return Response.json(
+            { error: 'Verification required.' },
+            { status: 403, headers: corsHeaders }
+          );
+        }
+
+        const turnstileResponse = await fetch(
+          'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              secret: env.TURNSTILE_SECRET_KEY,
+              response: body.turnstileToken,
+              remoteip: ip,
+            }),
+          }
+        );
+
+        const turnstileResult = await turnstileResponse.json() as { success: boolean };
+        if (!turnstileResult.success) {
+          return Response.json(
+            { error: 'Verification failed. Are you a robot?' },
+            { status: 403, headers: corsHeaders }
+          );
+        }
+
+        // Mark IP as verified for the window
+        verifiedIps.set(ip, Date.now() + VERIFIED_WINDOW_MS);
       }
 
       const userMessage = buildUserMessage(body);

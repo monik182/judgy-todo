@@ -1,8 +1,9 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, Subscription, catchError, map, of, timeout } from 'rxjs';
+import { Observable, Subscription, catchError, from, map, of, switchMap, timeout } from 'rxjs';
 import { JudgeMessage } from '../../shared/models/todo.model';
 import { TodoService } from '../../features/todos/todo.service';
+import { TurnstileService } from './turnstile.service';
 
 const MESSAGE_TYPES: Record<string, JudgeMessage['type']> = {
   ON_ADD_TASK: 'roast',
@@ -48,6 +49,7 @@ const ROASTS: Record<string, string[]> = {
 export class JudgeService {
   private http = inject(HttpClient);
   private todoService = inject(TodoService);
+  private turnstile = inject(TurnstileService);
 
   private readonly apiUrl = 'https://judgy-todo-api.monik182.workers.dev/api/judge';
 
@@ -96,22 +98,24 @@ export class JudgeService {
       completed: t.completed,
     }));
 
-    return this.http
-      .post<{ response: string }>(this.apiUrl, {
-        action,
-        question,
-        context,
-        todos,
-      })
-      .pipe(
-        timeout(8000),
-        map((res) => res.response),
-        catchError(() => {
-          const template = this._pickRoast(action);
-          const text = context ? this._interpolate(template, context) : template;
-          return of(text);
+    return from(this.turnstile.getToken().catch(() => null)).pipe(
+      switchMap((turnstileToken) =>
+        this.http.post<{ response: string }>(this.apiUrl, {
+          action,
+          question,
+          context,
+          todos,
+          ...(turnstileToken && { turnstileToken }),
         }),
-      );
+      ),
+      timeout(8000),
+      map((res) => res.response),
+      catchError(() => {
+        const template = this._pickRoast(action);
+        const text = context ? this._interpolate(template, context) : template;
+        return of(text);
+      }),
+    );
   }
 
   private _pushMessage(text: string, type: JudgeMessage['type']): void {
