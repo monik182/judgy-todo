@@ -4,6 +4,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { TodoService } from './todo.service';
+import { JudgeService } from '../../core/services/judge.service';
 import { TodoInputComponent } from './todo-input.component';
 import { TodoItemComponent } from './todo-item.component';
 import { TodoFiltersComponent } from './todo-filters.component';
@@ -81,17 +82,28 @@ import { Priority, TodoFilter } from '../../shared/models/todo.model';
 })
 export class TodoComponent {
   todoService = inject(TodoService);
+  private judgeService = inject(JudgeService);
 
   onAdd(event: { text: string; priority: Priority }): void {
     this.todoService.addTodo(event.text, event.priority);
+    this.judgeService.reactToAction('ON_ADD_TASK', { task: event.text });
   }
 
   onToggle(id: string): void {
     this.todoService.toggleTodo(id);
+    const todo = this.todoService.todos().find((t) => t.id === id);
+    if (todo?.completed) {
+      this.judgeService.reactToAction('ON_COMPLETE_TASK', {
+        task: todo.text,
+        remaining: String(this.todoService.stats().active),
+      });
+    }
   }
 
   onDelete(id: string): void {
+    const todo = this.todoService.todos().find((t) => t.id === id);
     this.todoService.deleteTodo(id);
+    this.judgeService.reactToAction('ON_DELETE_TASK', { task: todo?.text ?? 'something' });
   }
 
   onFilterChange(filter: TodoFilter): void {
@@ -100,5 +112,6 @@ export class TodoComponent {
 
   onClearCompleted(): void {
     this.todoService.clearCompleted();
+    this.judgeService.reactToAction('ON_CLEAR_COMPLETED');
   }
 }

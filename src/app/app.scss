@@ -1,0 +1,13 @@
+.app-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding: 16px;
+  height: 100vh;
+  box-sizing: border-box;
+}
+
+.app-layout__todos,
+.app-layout__judge {
+  min-height: 0;
+}
