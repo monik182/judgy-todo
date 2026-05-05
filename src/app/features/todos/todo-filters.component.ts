@@ -13,12 +13,12 @@ import { TodoFilter } from '../../shared/models/todo.model';
         </button>
       }
       <div class="todo-filters__spacer"></div>
-      @if (currentFilter() === 'active' || currentFilter() === 'all') {
+      @if (total() > 0 && (currentFilter() === 'active' || currentFilter() === 'all')) {
         <button class="todo-filters__btn" (click)="filterChanged.emit('completed')">
           Show completed to-dos
         </button>
       }
-      @if (currentFilter() === 'completed') {
+      @if (total() > 0 && currentFilter() === 'completed') {
         <button class="todo-filters__btn" (click)="filterChanged.emit('active')">
           Show active to-dos
         </button>

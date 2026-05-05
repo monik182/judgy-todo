@@ -1,4 +1,4 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, computed, effect, signal } from '@angular/core';
 import { Todo, TodoFilter, Priority } from '../../shared/models/todo.model';
 
 const INITIAL_TODOS: Todo[] = [
@@ -26,6 +26,9 @@ const INITIAL_TODOS: Todo[] = [
   },
 ];
 
+const MAX_AGE = 5 * 60 * 1000;
+const STORAGE_KEY = 'todos';
+
 @Injectable({ providedIn: 'root' })
 export class TodoService {
   private _todos = signal<Todo[]>(INITIAL_TODOS);
@@ -33,6 +36,30 @@ export class TodoService {
 
   readonly todos = this._todos.asReadonly();
   readonly filter = this._filter.asReadonly();
+
+  constructor() {
+    const storedTodos = localStorage.getItem(STORAGE_KEY);
+
+
+    if (storedTodos) {
+      const parsedTodos = JSON.parse(storedTodos);
+      const timeDiff = Date.now() - parsedTodos.lastUpdated;
+      if (timeDiff < MAX_AGE) {
+        this._todos.set(parsedTodos.todos);
+      } else {
+        // Remove expired data
+        localStorage.removeItem(STORAGE_KEY);
+        // Reset to initial todos
+        this._todos.set(INITIAL_TODOS);
+      }
+    }
+
+    effect(() => {
+      const todos = this._todos();
+      const lastUpdated = Date.now();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ todos, lastUpdated }));
+    });
+  }
 
   readonly filteredTodos = computed(() => {
     const todos = this._todos();
@@ -75,10 +102,10 @@ export class TodoService {
       todos.map((t) =>
         t.id === id
           ? {
-              ...t,
-              completed: !t.completed,
-              completedAt: !t.completed ? new Date() : undefined,
-            }
+            ...t,
+            completed: !t.completed,
+            completedAt: !t.completed ? new Date() : undefined,
+          }
           : t,
       ),
     );
@@ -94,5 +121,13 @@ export class TodoService {
 
   clearCompleted(): void {
     this._todos.update((todos) => todos.filter((t) => !t.completed));
+  }
+
+  clearAll(): void {
+    this._todos.set([]);
+  }
+
+  reset(): void {
+    this._todos.set(INITIAL_TODOS);
   }
 }

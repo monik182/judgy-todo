@@ -57,7 +57,7 @@ import { MatRadioModule } from '@angular/material/radio';
   styles: `
 
   .settings-form {
-    padding: 0 20px;
+    padding: 20px;
   }
     .error {
       color: red;

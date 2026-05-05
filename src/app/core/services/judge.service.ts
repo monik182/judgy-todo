@@ -7,6 +7,7 @@ import { SettingsService } from '../../features/settings/settings.service';
 
 const MESSAGE_TYPES: Record<string, JudgeMessage['type']> = {
   ON_ADD_TASK: 'roast',
+  ON_CLEAR_ALL_TASK: 'roast',
   ON_COMPLETE_TASK: 'praise',
   ON_DELETE_TASK: 'roast',
   ON_CLEAR_COMPLETED: 'roast',
@@ -42,6 +43,11 @@ const ROASTS: Record<string, string[]> = {
     "Oh, you want MY opinion? How delightfully desperate.",
     "Let me consult my crystal ball... it says 'try harder'.",
     "Interesting question. My answer: have you tried not procrastinating?",
+  ],
+  ON_CLEAR_ALL_TASK: [
+    "Oh, you're clearing ALL your tasks? How... thorough of you.",
+    "Deleting everything? That's... surprisingly productive.",
+    "Out with the old, in with the... non-existent?",
   ],
 };
 
@@ -105,6 +111,7 @@ export class JudgeService {
         context,
         todos,
         personality: this.settingsService.judgePersonality(),
+        userName: this.settingsService.name(),
       })
       .pipe(
         timeout(8000),
