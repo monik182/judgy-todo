@@ -11,65 +11,74 @@ import { MatRadioModule } from '@angular/material/radio';
   template: `
     <div class="settings-form">
       <form [formRoot]="settingsForm">
-        <div class="form-field">
-          <label>
-            <span>Name</span>
-            <input type="text" [formField]="settingsForm.name" />
-          </label>
+        <div class="form-section">
+          <label class="form-label" for="name-input">Name</label>
+          <input id="name-input" type="text" [formField]="settingsForm.name" placeholder="Enter your name" />
+          @if (settingsForm.name().invalid() && settingsForm.name().touched()) {
+            <div class="form-error">
+              @for (error of settingsForm.name().errors(); track error.kind) {
+                <span>{{ error.message }}</span>
+              }
+            </div>
+          }
         </div>
 
-        <div class="form-field">
-          <label for="judge-personality">
-            <span>Judge Personality</span>
-            <mat-radio-group id="judge-personality" aria-label="Judge Personality" [formField]="settingsForm.judgePersonality">
-              <mat-radio-button value="sarcastic">Sarcastic</mat-radio-button>
-              <mat-radio-button value="supportive">Supportive</mat-radio-button>
-              <mat-radio-button value="savage">Savage</mat-radio-button>
-            </mat-radio-group>
-          </label>
+        <div class="form-section">
+          <label class="form-label" for="judge-personality">Judge Personality</label>
+          <p class="form-hint">Choose how the judge talks to you</p>
+          <mat-radio-group id="judge-personality" aria-label="Judge Personality" [formField]="settingsForm.judgePersonality">
+            <mat-radio-button value="sarcastic">Sarcastic</mat-radio-button>
+            <mat-radio-button value="supportive">Supportive</mat-radio-button>
+            <mat-radio-button value="savage">Savage</mat-radio-button>
+          </mat-radio-group>
         </div>
 
-        <div class="form-field">
-          <label for="theme">
-            <span>Theme</span>
-            <mat-radio-group id="theme" aria-label="Theme" [formField]="settingsForm.theme">
-              <mat-radio-button value="light">Light</mat-radio-button>
-              <mat-radio-button value="dark">Dark</mat-radio-button>
-              <mat-radio-button value="purple">Purple</mat-radio-button>
-            </mat-radio-group>
-          </label>
+        <div class="form-section">
+          <label class="form-label" for="theme">Theme</label>
+          <p class="form-hint">Pick a vibe for the app</p>
+          <mat-radio-group id="theme" aria-label="Theme" [formField]="settingsForm.theme">
+            <mat-radio-button value="light">Light</mat-radio-button>
+            <mat-radio-button value="dark">Dark</mat-radio-button>
+            <mat-radio-button value="purple">Purple</mat-radio-button>
+          </mat-radio-group>
         </div>
 
         <div class="form-actions">
-          <button matButton="filled" type="submit" [disabled]="settingsForm().invalid() || !hasChanges()">Save</button>
           <button matButton="text" [disabled]="settingsForm().invalid() || !hasChanges()" (click)="onDiscard()">Discard</button>
+          <button matButton="filled" type="submit" [disabled]="settingsForm().invalid() || !hasChanges()">Save</button>
         </div>
       </form>
-      @if (settingsForm.name().invalid() && settingsForm.name().touched()) {
-      <div class="error">
-        @for (error of settingsForm.name().errors(); track error.kind) {
-          <span>{{ error.message }}</span>
-        }
-      </div>
-    }
     </div>
   `,
   styles: `
-
-  .settings-form {
-    padding: 20px;
-  }
-    .error {
-      color: red;
-      font-size: 12px;
-      margin-top: 4px;
-      text-align: left;
+    .settings-form {
+      padding: 8px 4px;
     }
 
-    .form-field {
+    form {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 28px;
+    }
+
+    .form-section {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #5a2d82;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-hint {
+      font-size: 12px;
+      color: #888;
+      margin: 0 0 4px 0;
     }
 
     input {
@@ -77,26 +86,41 @@ import { MatRadioModule } from '@angular/material/radio';
       width: 100%;
       font-size: 14px;
       font-family: inherit;
-      background: transparent;
-      flex: 1;
-      border: 1.5px solid #ccc;
-      border-radius: 24px;
-      padding: 10px 16px;
-      background: white;
+      border: 1.5px solid rgba(123, 31, 162, 0.2);
+      border-radius: 12px;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.85);
+      box-sizing: border-box;
+      transition: border-color 0.2s, box-shadow 0.2s;
+
+      &:focus {
+        border-color: #7B1FA2;
+        box-shadow: 0 0 0 3px rgba(123, 31, 162, 0.1);
+      }
+
+      &::placeholder {
+        color: #bbb;
+      }
     }
 
-    form {
-      flex: 1;
+    mat-radio-group {
       display: flex;
-      flex-direction: column;
-      gap: 20px;
-      height: 100%;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .form-error {
+      color: #d32f2f;
+      font-size: 12px;
+      margin-top: 2px;
     }
 
     .form-actions {
       display: flex;
-      gap: 10px;
+      gap: 12px;
       justify-content: flex-end;
+      padding-top: 8px;
+      border-top: 1px solid rgba(123, 31, 162, 0.1);
     }
   `
 })

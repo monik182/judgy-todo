@@ -15,46 +15,79 @@ import { SettingsData } from './settings.model';
   imports: [SettingsFormComponent, MatTabsModule, MatButtonModule, DangerZoneComponent],
   template: `
     <div class="settings-component">
-      <h1>Settings</h1>
-      <mat-tab-group>
-        <mat-tab label="User Settings">
-          @defer (on viewport) {
-            <app-settings-form
-              [initialValues]="{
-                name: settingsService.name(),
-                judgePersonality: settingsService.judgePersonality(),
-                theme: settingsService.theme()
-              }"
-              (settingsOutput)="onSaveSettings($event)"
-            />
-          } @placeholder {
-            <div>Loading...</div>
-          } @loading (minimum 200ms) {
-            <div>Loading...</div>
-          }
-        </mat-tab>
-        <mat-tab label="Danger Zone">
-          @defer (on viewport) {
-            <app-danger-zone (clearAllOutput)="clearAll()" (resetAllOutput)="resetAll()" />
-          } @placeholder {
-            <div>Loading...</div>
-          } @loading (minimum 200ms) {
-            <div>Loading...</div>
-          }
-        </mat-tab>
-      </mat-tab-group>
+      <h1 class="settings-title">Settings</h1>
+      <div class="settings-card">
+        <mat-tab-group>
+          <mat-tab label="User Settings">
+            @defer (on viewport) {
+              <app-settings-form
+                [initialValues]="{
+                  name: settingsService.name(),
+                  judgePersonality: settingsService.judgePersonality(),
+                  theme: settingsService.theme()
+                }"
+                (settingsOutput)="onSaveSettings($event)"
+              />
+            } @placeholder {
+              <div class="settings-loading">Loading...</div>
+            } @loading (minimum 200ms) {
+              <div class="settings-loading">Loading...</div>
+            }
+          </mat-tab>
+          <mat-tab label="Danger Zone">
+            @defer (on viewport) {
+              <app-danger-zone (clearAllOutput)="clearAll()" (resetAllOutput)="resetAll()" />
+            } @placeholder {
+              <div class="settings-loading">Loading...</div>
+            } @loading (minimum 200ms) {
+              <div class="settings-loading">Loading...</div>
+            }
+          </mat-tab>
+        </mat-tab-group>
+      </div>
     </div>
   `,
   styles: `
     .settings-component {
       display: flex;
       flex-direction: column;
-      gap: 16px;
       height: 100%;
     }
 
-    app-settings-form {
+    .settings-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+      margin: 0 0 16px 0;
+    }
+
+    .settings-card {
+      background: linear-gradient(145deg, #e8d5f5, #d4b8e8);
+      border-radius: 20px;
+      padding: 24px;
       flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+    }
+
+    .settings-loading {
+      padding: 24px;
+      text-align: center;
+      color: #7B1FA2;
+      font-size: 14px;
+      opacity: 0.6;
+    }
+
+    ::ng-deep .settings-card .mat-mdc-tab-labels {
+      gap: 4px;
+    }
+
+    ::ng-deep .settings-card .mdc-tab {
+      border-radius: 12px;
+    }
+
+    ::ng-deep .settings-card .mat-mdc-tab:not(.mdc-tab--active) {
+      opacity: 0.7;
     }
   `
 })
