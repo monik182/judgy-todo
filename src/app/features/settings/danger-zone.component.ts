@@ -43,7 +43,7 @@ export class DangerZoneComponent {
 }
 
 @Component({
-  selector: 'confirmation-dialog',
+  selector: 'app-confirmation-dialog',
   template: `
   <h2 mat-dialog-title>Are you sure?</h2>
   <mat-dialog-content>Are you sure you want to clear all todos? This action cannot be undone.</mat-dialog-content>

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, effect, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, input, output, signal } from '@angular/core';
 import { form, required, FormField, FormRoot } from '@angular/forms/signals';
 import { SettingsData } from './settings.model';
 import { MatButtonModule } from '@angular/material/button';
@@ -19,9 +19,9 @@ import { MatRadioModule } from '@angular/material/radio';
         </div>
 
         <div class="form-field">
-          <label>
+          <label for="judge-personality">
             <span>Judge Personality</span>
-            <mat-radio-group aria-label="Judge Personality" [formField]="settingsForm.judgePersonality">
+            <mat-radio-group id="judge-personality" aria-label="Judge Personality" [formField]="settingsForm.judgePersonality">
               <mat-radio-button value="sarcastic">Sarcastic</mat-radio-button>
               <mat-radio-button value="supportive">Supportive</mat-radio-button>
               <mat-radio-button value="savage">Savage</mat-radio-button>
@@ -30,9 +30,9 @@ import { MatRadioModule } from '@angular/material/radio';
         </div>
 
         <div class="form-field">
-          <label>
+          <label for="theme">
             <span>Theme</span>
-            <mat-radio-group aria-label="Theme" [formField]="settingsForm.theme">
+            <mat-radio-group id="theme" aria-label="Theme" [formField]="settingsForm.theme">
               <mat-radio-button value="light">Light</mat-radio-button>
               <mat-radio-button value="dark">Dark</mat-radio-button>
               <mat-radio-button value="purple">Purple</mat-radio-button>

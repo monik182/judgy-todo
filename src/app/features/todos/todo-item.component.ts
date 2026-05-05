@@ -7,7 +7,7 @@ import { Todo } from '../../shared/models/todo.model';
   selector: 'app-todo-item',
   imports: [MatIconModule, MatButtonModule],
   template: `
-    <div class="todo-item" [class.todo-item--completed]="todo().completed" (click)="toggled.emit(todo().id)">
+    <div class="todo-item" [class.todo-item--completed]="todo().completed" (click)="toggled.emit(todo().id)" (keydown.enter)="toggled.emit(todo().id)" tabindex="0">
       <span class="todo-item__text">{{ todo().text }}</span>
       <button
         class="todo-item__delete"
