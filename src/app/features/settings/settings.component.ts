@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { SettingsService } from './settings.service';
 import { SettingsFormComponent } from './settings-form.component';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -6,6 +7,7 @@ import { TodoService } from '../todos/todo.service';
 import { MatButtonModule } from '@angular/material/button';
 import { JudgeService } from '../../core/services/judge.service';
 import { DangerZoneComponent } from './danger-zone.component';
+import { SettingsData } from './settings.model';
 
 @Component({
   selector: 'app-settings',
@@ -23,7 +25,7 @@ import { DangerZoneComponent } from './danger-zone.component';
                 judgePersonality: settingsService.judgePersonality(),
                 theme: settingsService.theme()
               }"
-              (settingsOutput)="settingsService.updateSettings($event)"
+              (settingsOutput)="onSaveSettings($event)"
             />
           } @placeholder {
             <div>Loading...</div>
@@ -33,7 +35,7 @@ import { DangerZoneComponent } from './danger-zone.component';
         </mat-tab>
         <mat-tab label="Danger Zone">
           @defer (on viewport) {
-            <app-danger-zone (clearAllOutput)="clearAll()" (resetAllOutput)="todoService.reset()" />
+            <app-danger-zone (clearAllOutput)="clearAll()" (resetAllOutput)="resetAll()" />
           } @placeholder {
             <div>Loading...</div>
           } @loading (minimum 200ms) {
@@ -60,6 +62,17 @@ export class SettingsComponent {
   settingsService = inject(SettingsService);
   todoService = inject(TodoService);
   judgeService = inject(JudgeService);
+  private snackBar = inject(MatSnackBar);
+
+  onSaveSettings(data: SettingsData) {
+    this.settingsService.updateSettings(data);
+    this.snackBar.open('Settings saved', 'OK', { duration: 3000 });
+  }
+
+  resetAll() {
+    this.todoService.reset();
+    this.snackBar.open('Todos reset', 'OK', { duration: 3000 });
+  }
 
   clearAll() {
     this.todoService.clearAll();
