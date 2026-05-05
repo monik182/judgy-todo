@@ -19,9 +19,9 @@ import { DangerZoneComponent } from './danger-zone.component';
           @defer (on viewport) {
             <app-settings-form
               [initialValues]="{
-                name: this.settingsService.name(),
-                judgePersonality: this.settingsService.judgePersonality(),
-                theme: this.settingsService.theme()
+                name: settingsService.name(),
+                judgePersonality: settingsService.judgePersonality(),
+                theme: settingsService.theme()
               }"
               (settingsOutput)="settingsService.updateSettings($event)"
             />

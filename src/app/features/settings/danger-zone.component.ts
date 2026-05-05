@@ -11,6 +11,7 @@ import {
 
 @Component({
   selector: 'app-danger-zone',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MatButtonModule],
   template: `
   <div style="display: flex; flex-direction: column; gap: 16px;">
