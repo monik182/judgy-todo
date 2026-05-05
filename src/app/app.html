@@ -1,5 +1,5 @@
 <div class="app-layout">
-  <div class="app-layout__main">
+  <div class="app-layout__left">
     <nav class="app-nav">
       <a class="app-nav__link" routerLink="/todos" routerLinkActive="app-nav__link--active">Todos</a>
       <a class="app-nav__link" routerLink="/settings" routerLinkActive="app-nav__link--active">Settings</a>
@@ -8,9 +8,11 @@
       <router-outlet />
     </div>
   </div>
-  @defer (on idle) {
-    <app-judge-panel />
-  } @placeholder {
-    <div class="loading-judge">Loading judge...</div>
-  }
+  <div class="app-layout__right">
+    @defer (on idle) {
+      <app-judge-panel />
+    } @placeholder {
+      <div class="loading-judge">Loading judge...</div>
+    }
+  </div>
 </div>

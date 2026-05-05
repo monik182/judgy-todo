@@ -48,10 +48,18 @@ import { SettingsData } from './settings.model';
     </div>
   `,
   styles: `
+    :host {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
     .settings-component {
       display: flex;
       flex-direction: column;
       height: 100%;
+      overflow: hidden;
     }
 
     .settings-title {

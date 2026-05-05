@@ -45,10 +45,18 @@ import { Priority, TodoFilter } from '../../shared/models/todo.model';
     </div>
   `,
   styles: `
+    :host {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
     .todo-panel {
       height: 100%;
       display: flex;
       flex-direction: column;
+      overflow: hidden;
     }
     .todo-panel__card {
       background: linear-gradient(145deg, #e8d5f5, #d4b8e8);
@@ -56,7 +64,8 @@ import { Priority, TodoFilter } from '../../shared/models/todo.model';
       padding: 20px;
       flex: 1;
       min-height: 0;
-      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
     }
     .todo-panel__title {
       font-size: 16px;
@@ -65,7 +74,9 @@ import { Priority, TodoFilter } from '../../shared/models/todo.model';
       color: #333;
     }
     .todo-panel__list {
-      min-height: 80px;
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
     }
     .todo-panel__empty {
       text-align: center;

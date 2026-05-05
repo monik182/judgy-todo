@@ -39,6 +39,7 @@ import { JudgeInputComponent } from './judge-input.component';
       background: white;
       border-radius: 20px;
       overflow: hidden;
+      flex: 1;
     }
     .judge-panel__header {
       padding: 16px 20px;
