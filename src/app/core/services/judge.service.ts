@@ -3,9 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, Subscription, catchError, map, of, timeout } from 'rxjs';
 import { JudgeMessage } from '../../shared/models/todo.model';
 import { TodoService } from '../../features/todos/todo.service';
+import { SettingsService } from '../../features/settings/settings.service';
 
 const MESSAGE_TYPES: Record<string, JudgeMessage['type']> = {
   ON_ADD_TASK: 'roast',
+  ON_CLEAR_ALL_TASK: 'roast',
   ON_COMPLETE_TASK: 'praise',
   ON_DELETE_TASK: 'roast',
   ON_CLEAR_COMPLETED: 'roast',
@@ -20,27 +22,32 @@ const ROASTS: Record<string, string[]> = {
     "'{task}'... sure, let's all pretend this is happening.",
   ],
   ON_COMPLETE_TASK: [
-    "Wait... you actually DID something? Let me screenshot this.",
+    'Wait... you actually DID something? Let me screenshot this.',
     "'{task}' completed! The prophecy was wrong, you CAN finish things.",
     "One down, {remaining} to go. At this rate, you'll be done by 2087.",
-    "Alert the media — a task was actually completed today.",
+    'Alert the media — a task was actually completed today.',
   ],
   ON_DELETE_TASK: [
     "Deleting '{task}'? That's one way to handle accountability.",
-    "Ah, the classic 'it never existed' strategy. Respect.",
-    "Out of sight, out of mind. Very zen of you.",
+    'Ah, the classic "it never existed" strategy. Respect.',
+    'Out of sight, out of mind. Very zen of you.',
     "'{task}' has been eliminated. No witnesses.",
   ],
   ON_CLEAR_COMPLETED: [
-    "Clearing the evidence of productivity? Suspicious.",
-    "Destroying the receipts, I see. Very corporate of you.",
-    "All that hard work, swept under the rug. Classic.",
+    'Clearing the evidence of productivity? Suspicious.',
+    'Destroying the receipts, I see. Very corporate of you.',
+    'All that hard work, swept under the rug. Classic.',
   ],
   ON_ASK: [
     "You're asking ME for advice? That's... actually smart for once.",
-    "Oh, you want MY opinion? How delightfully desperate.",
-    "Let me consult my crystal ball... it says 'try harder'.",
-    "Interesting question. My answer: have you tried not procrastinating?",
+    'Oh, you want MY opinion? How delightfully desperate.',
+    'Let me consult my crystal ball... it says "try harder".',
+    'Interesting question. My answer: have you tried not procrastinating?',
+  ],
+  ON_CLEAR_ALL_TASK: [
+    "Oh, you're clearing ALL your tasks? How... thorough of you.",
+    "Deleting everything? That's... surprisingly productive.",
+    'Out with the old, in with the... non-existent?',
   ],
 };
 
@@ -48,13 +55,14 @@ const ROASTS: Record<string, string[]> = {
 export class JudgeService {
   private http = inject(HttpClient);
   private todoService = inject(TodoService);
+  private settingsService = inject(SettingsService);
 
   private readonly apiUrl = 'https://judgy-todo-api.monik182.workers.dev/api/judge';
 
   private _messages = signal<JudgeMessage[]>([
     {
       id: crypto.randomUUID(),
-      text: "Oh look, another productivity app. This will definitely be the one that changes your life. 🙄",
+      text: 'Oh look, another productivity app. This will definitely be the one that changes your life. 🙄',
       type: 'roast',
       timestamp: new Date(),
     },
@@ -102,6 +110,8 @@ export class JudgeService {
         question,
         context,
         todos,
+        personality: this.settingsService.judgePersonality(),
+        userName: this.settingsService.name(),
       })
       .pipe(
         timeout(8000),

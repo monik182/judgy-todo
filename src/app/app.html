@@ -2,7 +2,9 @@
   <div class="app-layout__todos">
     <router-outlet />
   </div>
-  <div class="app-layout__judge">
+  @defer (on idle) {
     <app-judge-panel />
-  </div>
+  } @placeholder {
+    <div class="loading-judge">Loading judge...</div>
+  }
 </div>

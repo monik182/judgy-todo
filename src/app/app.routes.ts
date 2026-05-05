@@ -7,4 +7,9 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/todos/todo.component').then((m) => m.TodoComponent),
   },
+  {
+    path: 'settings',
+    loadComponent: () =>
+      import('./features/settings/settings.component').then((m) => m.SettingsComponent),
+  },
 ];
