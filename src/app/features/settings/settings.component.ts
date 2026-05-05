@@ -16,17 +16,29 @@ import { DangerZoneComponent } from "./danger-zone.component";
       <h1>Settings</h1>
       <mat-tab-group>
         <mat-tab label="User Settings">
-                <app-settings-form
-                  [initialValues]="{
-                    name: this.settingsService.name(),
-                    judgePersonality: this.settingsService.judgePersonality(),
-                    theme: this.settingsService.theme()
-                  }"
-                  (settingsOutput)="settingsService.updateSettings($event)"
-                />
+          @defer (on viewport) {
+            <app-settings-form
+              [initialValues]="{
+                name: this.settingsService.name(),
+                judgePersonality: this.settingsService.judgePersonality(),
+                theme: this.settingsService.theme()
+              }"
+              (settingsOutput)="settingsService.updateSettings($event)"
+            />
+          } @placeholder {
+            <div>Loading...</div>
+          } @loading (minimum 200ms) {
+            <div>Loading...</div>
+          }
         </mat-tab>
         <mat-tab label="Danger Zone">
-          <app-danger-zone (clearAllOutput)="clearAll()" (resetAllOutput)="todoService.reset()" />
+          @defer (on viewport) {
+            <app-danger-zone (clearAllOutput)="clearAll()" (resetAllOutput)="todoService.reset()" />
+          } @placeholder {
+            <div>Loading...</div>
+          } @loading (minimum 200ms) {
+            <div>Loading...</div>
+          }
         </mat-tab>
       </mat-tab-group>
     </div>
