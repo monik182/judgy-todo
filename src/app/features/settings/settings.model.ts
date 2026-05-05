@@ -1,6 +1,6 @@
-export type JudgePersonality = "savage" | "sarcastic" | "supportive";
+export type JudgePersonality = 'savage' | 'sarcastic' | 'supportive';
 
-export type Theme = "dark" | "light" | "purple"
+export type Theme = 'dark' | 'light' | 'purple';
 
 export interface SettingsData {
   name: string,

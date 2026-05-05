@@ -5,9 +5,9 @@ const SETTINGS_KEY = 'settings';
 
 @Injectable({ providedIn: 'root' })
 export class SettingsService {
-  private _name = signal<string>("User")
-  private _judgePersonality = signal<JudgePersonality>("sarcastic")
-  private _theme = signal<Theme>("light")
+  private _name = signal<string>('User')
+  private _judgePersonality = signal<JudgePersonality>('sarcastic')
+  private _theme = signal<Theme>('light')
 
   readonly name = this._name.asReadonly();
   readonly judgePersonality = this._judgePersonality.asReadonly();
@@ -18,9 +18,9 @@ export class SettingsService {
 
     if (savedSettings) {
       const parsedData: SettingsData = JSON.parse(savedSettings)
-      this._name.set(parsedData.name || "User");
-      this._judgePersonality.set(parsedData.judgePersonality || "sarcastic");
-      this._theme.set(parsedData.theme || "light");
+      this._name.set(parsedData.name || 'User');
+      this._judgePersonality.set(parsedData.judgePersonality || 'sarcastic');
+      this._theme.set(parsedData.theme || 'light');
     }
 
     effect(() => {

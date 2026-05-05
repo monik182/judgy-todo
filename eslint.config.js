@@ -15,6 +15,7 @@ module.exports = defineConfig([
     ],
     processor: angular.processInlineTemplates,
     rules: {
+      '@/quotes': ['error', 'single', { avoidEscape: true }],
       '@angular-eslint/directive-selector': [
         'error',
         {

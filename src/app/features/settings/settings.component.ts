@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { SettingsService } from './settings.service';
-import { SettingsFormComponent } from "./settings-form.component";
+import { SettingsFormComponent } from './settings-form.component';
 import { MatTabsModule } from '@angular/material/tabs';
 import { TodoService } from '../todos/todo.service';
 import { MatButtonModule } from '@angular/material/button';
 import { JudgeService } from '../../core/services/judge.service';
-import { DangerZoneComponent } from "./danger-zone.component";
+import { DangerZoneComponent } from './danger-zone.component';
 
 @Component({
   selector: 'app-settings',
