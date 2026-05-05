@@ -1,16 +1,17 @@
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 import { TodoService } from './todo.service';
 import { JudgeService } from '../../core/services/judge.service';
 import { TodoInputComponent } from './todo-input.component';
 import { TodoItemComponent } from './todo-item.component';
 import { TodoFiltersComponent } from './todo-filters.component';
 import { TodoStatsComponent } from './todo-stats.component';
-import { Priority, TodoFilter } from '../../shared/models/todo.model';
+import { Priority, Todo, TodoFilter } from '../../shared/models/todo.model';
 
 @Component({
   selector: 'app-todo',
   imports: [
-    TodoInputComponent, TodoItemComponent, TodoFiltersComponent, TodoStatsComponent,
+    ScrollingModule, TodoInputComponent, TodoItemComponent, TodoFiltersComponent, TodoStatsComponent,
   ],
   template: `
     <div class="todo-panel">
@@ -19,17 +20,18 @@ import { Priority, TodoFilter } from '../../shared/models/todo.model';
       <div class="todo-panel__card">
         <h2 class="todo-panel__title">Your Tasks</h2>
 
-        <div class="todo-panel__list">
-          @for (todo of todoService.filteredTodos(); track todo.id) {
+        @if (todoService.filteredTodos().length === 0) {
+          <p class="todo-panel__empty">No tasks here. The judge is watching...</p>
+        } @else {
+          <cdk-virtual-scroll-viewport itemSize="60" class="todo-panel__list">
             <app-todo-item
+              *cdkVirtualFor="let todo of todoService.filteredTodos(); trackBy: trackById"
               [todo]="todo"
               (toggled)="onToggle($event)"
               (deleted)="onDelete($event)"
             />
-          } @empty {
-            <p class="todo-panel__empty">No tasks here. The judge is watching...</p>
-          }
-        </div>
+          </cdk-virtual-scroll-viewport>
+        }
 
         <app-todo-filters
           [currentFilter]="todoService.filter()"
@@ -76,7 +78,6 @@ import { Priority, TodoFilter } from '../../shared/models/todo.model';
     .todo-panel__list {
       flex: 1;
       min-height: 0;
-      overflow-y: auto;
     }
     .todo-panel__empty {
       text-align: center;
@@ -90,6 +91,10 @@ import { Priority, TodoFilter } from '../../shared/models/todo.model';
 export class TodoComponent {
   todoService = inject(TodoService);
   private judgeService = inject(JudgeService);
+
+  trackById(_index: number, todo: Todo): string {
+    return todo.id;
+  }
 
   onAdd(event: { text: string; priority: Priority }): void {
     this.todoService.addTodo(event.text, event.priority);
