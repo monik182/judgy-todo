@@ -1,24 +1,33 @@
-import { Component, ChangeDetectionStrategy, inject, output } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, ChangeDetectionStrategy, output, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { Priority } from '../../shared/models/todo.model';
+import { form, required, FormField, submit } from '@angular/forms/signals';
 
 @Component({
   selector: 'app-todo-input',
-  imports: [ReactiveFormsModule, MatIconModule],
+  imports: [MatIconModule, FormField],
   template: `
-    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="todo-input">
+    <form (submit)="onSubmit($event)" class="todo-input">
       <div class="todo-input__field">
         <input
           formControlName="text"
           placeholder="What needs doing?"
           class="todo-input__native"
+          [formField]="todoForm.text"
         />
       </div>
-      <button type="submit" [disabled]="form.invalid" class="todo-input__send">
+      <button type="submit" [disabled]="todoForm().invalid()" class="todo-input__send">
         <mat-icon>add</mat-icon>
       </button>
     </form>
+    @if (todoForm.text().invalid() && todoForm.text().touched()) {
+      <div class="error">
+        @for (error of todoForm.text().errors(); track error.kind) {
+          <span>{{ error.message }}</span>
+        }
+      </div>
+    }
+
   `,
   styles: `
     .todo-input {
@@ -68,25 +77,32 @@ import { Priority } from '../../shared/models/todo.model';
       width: 20px;
       height: 20px;
     }
+    .error {
+      color: red;
+      font-size: 12px;
+      margin-top: 4px;
+      text-align: center;
+    }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TodoInputComponent {
-  private fb = inject(FormBuilder);
+  todoModel = signal<{ text: string; priority: Priority | null }>({ text: '', priority: 'medium' });
+  todoForm = form(this.todoModel, (fieldPath) => {
+    required(fieldPath.text, { message: 'Text is required' });
+  })
 
   todoAdded = output<{ text: string; priority: Priority }>();
 
-  form = this.fb.nonNullable.group({
-    text: ['', Validators.required],
-    priority: ['medium' as Priority],
-  });
-
-  onSubmit(): void {
-    if (this.form.invalid) return;
-    const { text, priority } = this.form.getRawValue();
-    this.todoAdded.emit({ text, priority });
-    this.form.reset();
-    this.form.markAsPristine();
-    this.form.markAsUntouched();
+  onSubmit(event: Event): void {
+    event.preventDefault();
+    if (this.todoForm().invalid()) return;
+    submit(this.todoForm, async () => {
+      const data = this.todoModel()
+      const { text, priority } = data;
+      this.todoAdded.emit({ text, priority: priority! });
+      this.todoModel.set({ text: '', priority: 'medium' });
+      this.todoForm().reset();
+    });
   }
 }
