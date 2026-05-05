@@ -60,7 +60,7 @@ function buildUserMessage(body: JudgeRequest): string {
 
   switch (body.action) {
     case 'ON_ADD_TASK':
-      parts.push(`The user just added a new task: "${body.context?.task ?? 'unknown'}".`);
+      parts.push(`The user just added a new task: "${body.context?.task ?? 'unknown'}". Note: this task now appears in the todo list above because it was just added — it is NOT a duplicate.`);
       break;
     case 'ON_COMPLETE_TASK':
       parts.push(
