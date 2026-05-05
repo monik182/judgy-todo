@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, Subscription, catchError, map, of, timeout } from 'rxjs';
 import { JudgeMessage } from '../../shared/models/todo.model';
 import { TodoService } from '../../features/todos/todo.service';
+import { SettingsService } from '../../features/settings/settings.service';
 
 const MESSAGE_TYPES: Record<string, JudgeMessage['type']> = {
   ON_ADD_TASK: 'roast',
@@ -48,6 +49,7 @@ const ROASTS: Record<string, string[]> = {
 export class JudgeService {
   private http = inject(HttpClient);
   private todoService = inject(TodoService);
+  private settingsService = inject(SettingsService);
 
   private readonly apiUrl = 'https://judgy-todo-api.monik182.workers.dev/api/judge';
 
@@ -102,6 +104,7 @@ export class JudgeService {
         question,
         context,
         todos,
+        personality: this.settingsService.judgePersonality(),
       })
       .pipe(
         timeout(8000),
