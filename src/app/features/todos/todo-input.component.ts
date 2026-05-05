@@ -101,8 +101,8 @@ export class TodoInputComponent {
       const data = this.todoModel()
       const { text, priority } = data;
       this.todoAdded.emit({ text, priority: priority! });
-      this.todoModel.set({ text: '', priority: 'medium' });
       this.todoForm().reset();
+      this.todoModel.set({ text: '', priority: 'medium' });
     });
   }
 }

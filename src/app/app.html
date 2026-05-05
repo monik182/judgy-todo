@@ -1,6 +1,12 @@
 <div class="app-layout">
-  <div class="app-layout__todos">
-    <router-outlet />
+  <div class="app-layout__main">
+    <nav class="app-nav">
+      <a class="app-nav__link" routerLink="/todos" routerLinkActive="app-nav__link--active">Todos</a>
+      <a class="app-nav__link" routerLink="/settings" routerLinkActive="app-nav__link--active">Settings</a>
+    </nav>
+    <div class="app-layout__content">
+      <router-outlet />
+    </div>
   </div>
   @defer (on idle) {
     <app-judge-panel />

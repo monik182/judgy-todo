@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, effect, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, input, output, signal } from '@angular/core';
 import { form, required, FormField, FormRoot } from '@angular/forms/signals';
 import { SettingsData } from './settings.model';
 import { MatButtonModule } from '@angular/material/button';
@@ -41,8 +41,8 @@ import { MatRadioModule } from '@angular/material/radio';
         </div>
 
         <div class="form-actions">
-          <button matButton="filled" type="submit" [disabled]="settingsForm().invalid() || !settingsForm().touched()">Save</button>
-          <button matButton="text" [disabled]="settingsForm().invalid() || !settingsForm().touched()" (click)="onDiscard()">Discard</button>
+          <button matButton="filled" type="submit" [disabled]="settingsForm().invalid() || !hasChanges()">Save</button>
+          <button matButton="text" [disabled]="settingsForm().invalid() || !hasChanges()" (click)="onDiscard()">Discard</button>
         </div>
       </form>
       @if (settingsForm.name().invalid() && settingsForm.name().touched()) {
@@ -105,6 +105,14 @@ export class SettingsFormComponent {
   settingsOutput = output<SettingsData>();
   initialValues = input<SettingsData>();
   settingsModel = signal<SettingsData>({ name: '', judgePersonality: 'sarcastic', theme: 'light' });
+  hasChanges = computed(() => {
+    const current = this.settingsModel();
+    const initial = this.initialValues();
+    if (!initial) return false;
+    return current.name !== initial.name
+      || current.judgePersonality !== initial.judgePersonality
+      || current.theme !== initial.theme;
+  });
   settingsForm = form(this.settingsModel, (fieldPath) => {
     required(fieldPath.name, { message: 'Name is required' });
     required(fieldPath.judgePersonality, { message: 'Judge personality is required' });
